@@ -36,7 +36,7 @@ public class EnemyStats : MonoBehaviour
         currentHealth -= damage;
         Vector2 knockbackDirection = transform.position - attackerPosition;
         knockbackDirection.Normalize();
-        _rigidbody.AddForce(new Vector2(knockbackDirection.x * _knockBackForceX, _knockBackForceY), ForceMode2D.Force);
+        _rigidbody.AddForce(new Vector2(knockbackDirection.x * _knockBackForceX, _knockBackForceY), ForceMode2D.Impulse);
 
         if (currentHealth <= 0)
         {
@@ -55,5 +55,16 @@ public class EnemyStats : MonoBehaviour
     {
         yield return new WaitForSeconds(flashDuration);
         GetComponent<SpriteRenderer>().material = _originalMaterial;
+    }
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("RestartTrigger"))
+        {
+            GetComponent<SpriteRenderer>().material = _damagedMaterial;
+            currentHealth -= currentHealth;
+            _animator.SetTrigger("death");
+            Destroy(gameObject, 0.4f);
+        }
     }
 }

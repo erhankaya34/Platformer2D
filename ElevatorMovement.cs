@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Elevator : MonoBehaviour
@@ -8,10 +9,14 @@ public class Elevator : MonoBehaviour
     private bool movingUp = true;
     private Rigidbody2D rb;
 
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
     void Start()
     {
         startY = transform.position.y;
-        rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0;
     }
 

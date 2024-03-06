@@ -24,8 +24,15 @@ public class PlayerStats : MonoBehaviour
     private CharacterController _character;
     private Animator _animator;
 
-    private bool isImmune;
+    public bool isImmune;
     [SerializeField] float immunityTime;
+
+    private bool isInHealingZone = false;
+    private float healInterval = 1f;
+    private float healTimer;
+    
+    [SerializeField] private Color originalManaBarColor;
+
 
 
     private void Awake()
@@ -38,6 +45,7 @@ public class PlayerStats : MonoBehaviour
     {
         _currentHealth = _maxHealth;
         _currentMana = _maxMana;
+        originalManaBarColor = manaBar.color;
     }
 
     void Update()
@@ -45,6 +53,11 @@ public class PlayerStats : MonoBehaviour
         HealthControl();
         ManaControl();
         RegenerateMana();
+
+        if (isInHealingZone)
+        {
+            HealOverTime();
+        }
     }
 
     public void SetMana(float mana)
@@ -103,26 +116,85 @@ public class PlayerStats : MonoBehaviour
             _currentMana = Mathf.Min(_currentMana, _maxMana);
         }
     }
+    
+    public void FlashManaBar()
+    {
+        StartCoroutine(FlashManaBarCoroutine());
+    }
+
+    private IEnumerator FlashManaBarCoroutine()
+    {
+        manaBar.color = Color.white;
+        yield return new WaitForSeconds(0.15f);
+        manaBar.color = originalManaBarColor;
+    }
+
+    public void TakeDamage(float damageAmount)
+    {
+        _currentHealth -= damageAmount;
+        StartCoroutine(ImmunityControl());
+
+        if (_currentHealth <= 0)
+        {
+            _character.canMove = false;
+            StartCoroutine(RestartLevel());
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().material = _damagedMaterial;
+            StartCoroutine(Flash());
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy") && !isImmune)
         {
-            _currentHealth -= collision.GetComponent<EnemyStats>().damage;
-            StartCoroutine(ImmunityControl());
+            TakeDamage(collision.GetComponent<EnemyStats>().damage);
+        }
 
-            if (_currentHealth <= 0)
-            {
-                _character.canMove = false;
-                StartCoroutine(RestartLevel());
-            }
-            else
-            {
-                GetComponent<SpriteRenderer>().material = _damagedMaterial;
-                StartCoroutine(Flash());
-            }
+        if (collision.CompareTag("TrapDamage") && !isImmune)
+        {
+            TakeDamage(10);
+        }
+
+        if (collision.CompareTag("Heal"))
+        {
+            isInHealingZone = true;
+            healTimer = 0;
         }
     }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Heal"))
+        {
+            isInHealingZone = false;
+        }
+    }
+
+    private void HealOverTime()
+    {
+        if (healTimer > 0)
+        {
+            healTimer -= Time.deltaTime;
+        }
+        else
+        {
+            Heal(10);
+            healTimer = healInterval;
+        }
+    }
+
+    private void Heal(float healAmount)
+    {
+        _currentHealth += healAmount;
+        if (_currentHealth > _maxHealth)
+        {
+            _currentHealth = _maxHealth;
+        }
+    }
+
 
     public void ResetHealth()
     {
