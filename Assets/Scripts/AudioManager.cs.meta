@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: 23966fcfb53837a449756eb114eb3384
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - MusicMixer: {fileID: 24100000, guid: 093062410bb041a4a9eb54d80e10d750, type: 2}
+  - EffectMixer: {fileID: 24100000, guid: 00dbee47fe2d63b46a406e4fb0c59e63, type: 2}
+  - SwordAS: {instanceID: 0}
+  - Sword2AS: {instanceID: 0}
+  - EnemeyDieAS: {instanceID: 0}
+  - ObjectiveCompletedAS: {instanceID: 0}
+  - BackgroundMusicAS: {instanceID: 0}
+  - HealingAS: {instanceID: 0}
+  - PlayerDamageAS: {instanceID: 0}
+  - PlayerDieAS: {instanceID: 0}
+  - CaveBackgroundMusicAS: {instanceID: 0}
+  - FailAS: {instanceID: 0}
+  - TrapSoundAS: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
